@@ -162,7 +162,7 @@ namespace NAxonFramework.Common
          */
         public Optional<U> Map<U>(Func<T, U> mapper)
         {
-            if (value == null) throw new ArgumentNullException(nameof(mapper));
+            if (mapper == null) throw new ArgumentNullException(nameof(mapper));
             if (!IsPresent)
                 return Optional<U>.Empty;
             else

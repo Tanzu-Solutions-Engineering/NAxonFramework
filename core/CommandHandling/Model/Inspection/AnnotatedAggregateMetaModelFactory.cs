@@ -102,12 +102,12 @@ namespace NAxonFramework.CommandHandling.Model.Inspection
             {
                 foreach (var handler in _handlerInspector.Handlers) 
                 {
-                    ICommandMessageHandlingMember commandHandler = handler
-                        .Unwrap<ICommandMessageHandlingMember>();
-                    ICommandHandlerInterceptorHandlingMember unwrappedCommandHandlerInterceptor = handler.Unwrap<ICommandHandlerInterceptorHandlingMember>();
-                    if (commandHandler != null) 
+                    
+                    var commandHandler = handler.Unwrap<ICommandMessageHandlingMember>();
+                    var unwrappedCommandHandlerInterceptor = handler.Unwrap<ICommandHandlerInterceptorHandlingMember>();
+                    if (commandHandler.IsPresent) 
                     {
-                        _commandHandlers.TryAdd(commandHandler.CommandName, handler);
+                        _commandHandlers.TryAdd(commandHandler.Get().CommandName, handler);
                     } 
                     else if (unwrappedCommandHandlerInterceptor != null) 
                     {

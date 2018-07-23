@@ -43,9 +43,9 @@ namespace NAxonFramework.CommandHandling
             return new GenericCommandMessage<T>(base.Delegate.AndMetaData(metaData), CommandName);
         }
 
-        ICommandMessage<T> ICommandMessage<T>.AndMetaData(IReadOnlyDictionary<string, object> metaData) => (ICommandMessage<T>) AndMetaData(metaData);
-
-        ICommandMessage<T> ICommandMessage<T>.WithMetaData(IReadOnlyDictionary<string, object> metaData) => (ICommandMessage<T>) WithMetaData(metaData);
+//        ICommandMessage<T> ICommandMessage<T>.AndMetaData(IReadOnlyDictionary<string, object> metaData) => (ICommandMessage<T>) AndMetaData(metaData);
+//
+//        ICommandMessage<T> ICommandMessage<T>.WithMetaData(IReadOnlyDictionary<string, object> metaData) => (ICommandMessage<T>) WithMetaData(metaData);
 
         protected override void DescribeTo(StringBuilder stringBuilder)
         {

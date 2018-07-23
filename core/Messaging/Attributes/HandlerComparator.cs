@@ -11,7 +11,7 @@ namespace NAxonFramework.Messaging.Attributes
             = Comparer<IMessageHandlingMember>.Default
                 .Comparing(x => x.PayloadType, Comparer<Type>.Create(CompareHierarchy))
                 .ThenComparing(x => x.Priority * -1)
-                .ThenComparing(m => m.Unwrap<MethodBase>()?.Name ?? m.ToString());
+                .ThenComparing(m => m.Unwrap<MethodBase>().Map(x => x.Name).OrElse(m.ToString()));
         // prevent construction
         private HandlerComparator() {
         }

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading.Tasks;
 using Xunit;
 using FluentAssertions;
 using NAxonFramework.Common;
@@ -26,6 +27,8 @@ namespace Core.Tests.Common.Annotation
         [Fact]
         public void TestFindAttributesOnStaticMetaAnnotationNamed()
         {
+            
+            
             var results = AnnotationUtils.FindAnnotationAttributes(GetType().GetMethod(nameof(StaticallyOverriddenNamedProperty)), typeof(TheTarget)).Get();
             results["Property"].Should().Be("overridden_statically");
         }

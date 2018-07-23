@@ -1,5 +1,7 @@
 ﻿using System.Collections.Generic;
+using System.Reflection;
 using FluentAssertions;
+using NAxonFramework.Common;
 using NAxonFramework.Messaging.Attributes;
 using NSubstitute;
 using Xunit;
@@ -15,17 +17,18 @@ namespace Core.Tests.Messaging.Annotation
 
         public HandlerComparatorTest()
         {
-            _stringHandler = Substitute.For<IMessageHandlingMember>();
-            _stringHandler.PayloadType.Returns(typeof(string));
-            _stringHandler.Priority.Returns(0);
-            
-            _objectHandler = Substitute.For<IMessageHandlingMember>();
-            _objectHandler.PayloadType.Returns(typeof(object));
-            _objectHandler.Priority.Returns(0);
-            
-            _longHandler = Substitute.For<IMessageHandlingMember>();
-            _longHandler.PayloadType.Returns(typeof(long));
-            _longHandler.Priority.Returns(0);
+            IMessageHandlingMember CreateMock<T>()
+            {
+                var mock = Substitute.For<IMessageHandlingMember>();
+                mock.Priority.Returns(0);
+                mock.PayloadType.Returns(typeof(T));
+                mock.Unwrap<MethodBase>().Returns(Optional<MethodBase>.Empty);
+                return mock;
+            }
+
+            _stringHandler = CreateMock<string>();
+            _objectHandler = CreateMock<object>();
+            _longHandler = CreateMock<long>();
 
             _testSubject = HandlerComparator.Instance;
         }

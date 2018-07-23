@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using NAxonFramework.Common;
 
 namespace NAxonFramework.Messaging.Attributes
 {
@@ -80,7 +81,7 @@ namespace NAxonFramework.Messaging.Attributes
      * of the given handlerType
      */
    //TODO: possibly not needed
-  HT Unwrap<HT>();// where HT : struct;
+  Optional<HT> Unwrap<HT>();// where HT : struct;
  
    /**
     * Checks whether the method of the target entity contains the given {@code annotationType}.
