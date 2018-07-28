@@ -4,6 +4,6 @@ namespace NAxonFramework.Messaging.Correlation
 {
     public interface ICorrelationDataProvider
     {
-        IReadOnlyDictionary<string, T> CorrelationDataFor<T>(IMessage<T> message);
+        IReadOnlyDictionary<string, object> CorrelationDataFor(IMessage message);
     }
 }

@@ -46,7 +46,7 @@ namespace NAxonFramework.Messaging.UnitOfWork
 
         public static void Clear(IUnitOfWork unitOfWork)
         {
-            if (IsStarted)
+            if (!IsStarted)
             {
                 throw new InvalidOperationException("Could not clear this UnitOfWork. There is no UnitOfWork active.");
             }
@@ -64,6 +64,7 @@ namespace NAxonFramework.Messaging.UnitOfWork
                 }
             }
         }
-        public static MetaData CorrelationData => throw new NotImplementedException();
+
+        public static MetaData CorrelationData => CurrentUnitOfWork.Map(x => x.CorrelationData).OrElse(MetaData.EmptyInstance);
     }
 }

@@ -13,14 +13,14 @@ namespace NAxonFramework.Messaging.UnitOfWork
         void Commit();
         void Rollback(Exception exception = null);
         Phase Phase { get; }
-        void OnPrepareCommit(Func<IUnitOfWork> handler);
-        void OnCommit(Func<IUnitOfWork> handler);
-        void AfterCommit(Func<IUnitOfWork> handler);
-        void OnRollback(Func<IUnitOfWork> handler);
-        void OnCleanup(Func<IUnitOfWork> handler);
+        void OnPrepareCommit(Action<IUnitOfWork> handler);
+        void OnCommit(Action<IUnitOfWork> handler);
+        void AfterCommit(Action<IUnitOfWork> handler);
+        void OnRollback(Action<IUnitOfWork> handler);
+        void OnCleanup(Action<IUnitOfWork> handler);
         Optional<IUnitOfWork> Parent { get; }
         IMessage Message { get; }
-        IUnitOfWork TransformMessage(Func<IMessage> transformOperation);
+        IUnitOfWork TransformMessage(Func<IMessage, IMessage> transformOperation);
         MetaData CorrelationData { get; }
         void RegisterCorrelationDataProvider(ICorrelationDataProvider correlationDataProvider);
         IDictionary<string,object> Resources { get; }
@@ -62,6 +62,27 @@ namespace NAxonFramework.Messaging.UnitOfWork
         UncheckedException,
         RuntimeExceptions
     }
+
+    public static class RolbackConfigurationTypeExtensions
+    {
+        public static bool RollbackOn(this RollbackConfigurationType value, Exception exception)
+        {
+            switch (value)
+            {
+                case RollbackConfigurationType.Never:
+                    return false;
+                case RollbackConfigurationType.AnyThrowable:
+                    return true;
+                case RollbackConfigurationType.UncheckedException:
+                    return true; // TODO: confirm mapping of exceptions to .net types
+                case RollbackConfigurationType.RuntimeExceptions:
+                    return true;
+                default:
+                    return true;
+            }
+        }
+    }
+    
 
     public enum Phase
     {

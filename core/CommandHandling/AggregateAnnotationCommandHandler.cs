@@ -96,6 +96,14 @@ namespace NAxonFramework.CommandHandling
             return _handlers.GetValueOrDefault(commandMessage.CommandName).Handle(commandMessage);
         }
 
+        public object Handle(IMessage message)
+        {
+            var commandMessage = message as ICommandMessage;
+            if(commandMessage == null)
+                throw new ArgumentException($"{nameof(message)} must implement {nameof(ICommandMessage)}", nameof(message));
+            return Handle(commandMessage);
+        }
+
         protected object ResolveReturnValue(ICommandMessage command, IAggregate<T> createdAggregate)
         {
             return createdAggregate.Identifier;
@@ -120,6 +128,14 @@ namespace NAxonFramework.CommandHandling
                 var aggregate = _parent._repository.NewInstance(() => (T) _handler.Handle(command, null));
                 return _parent.ResolveReturnValue(command, aggregate);
             }
+
+            public object Handle(IMessage message)
+            {
+                var commandMessage = message as ICommandMessage;
+                if(commandMessage == null)
+                    throw new ArgumentException($"{nameof(message)} must implement {nameof(ICommandMessage)}", nameof(message));
+                return Handle(commandMessage);
+            }
         }
 
         private class AggregateCommandHandler : IMessageHandler<ICommandMessage> 
@@ -135,6 +151,14 @@ namespace NAxonFramework.CommandHandling
             {
                 var iv = _parent._commandTargetResolver.ResolveTarget(command);
                 return _parent._repository.Load(iv.Identifier, iv.Version).Handle((ICommandMessage<T>)command);
+            }
+
+            public object Handle(IMessage message)
+            {
+                var commandMessage = message as ICommandMessage;
+                if(commandMessage == null)
+                    throw new ArgumentException($"{nameof(message)} must implement {nameof(ICommandMessage)}", nameof(message));
+                return Handle(commandMessage);
             }
         }
     }

@@ -2,7 +2,7 @@
 
 namespace NAxonFramework.CommandHandling
 {
-    public interface ICommandCallback<C,R>
+    public interface ICommandCallback<R>
     {
         void OnSuccess(ICommandMessage commandMessage, R result);
         void OnFailure(ICommandMessage commandMessage, Exception cause);

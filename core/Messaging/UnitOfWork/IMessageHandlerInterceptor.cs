@@ -2,6 +2,6 @@
 {
     public interface IMessageHandlerInterceptor
     {
-        object Handle(IUnitOfWork unitOfWork, InterceptorChain interceptorChain);
+        object Handle(IUnitOfWork unitOfWork, IInterceptorChain interceptorChain);
     }
 }
