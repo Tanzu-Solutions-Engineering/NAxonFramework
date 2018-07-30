@@ -23,6 +23,7 @@ namespace NAxonFramework.Common
         {
             IsTrue(value != null, messageSupplier);
         }
+        
         public static T NotNull<T>(T value, Func<string> messageSupplier)
         {
             IsTrue(value != null, messageSupplier);

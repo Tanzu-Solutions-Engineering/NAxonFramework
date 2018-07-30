@@ -4,7 +4,7 @@ namespace NAxonFramework.Messaging.UnitOfWork
 {
     public static class RolbackConfigurationTypeExtensions
     {
-        public static bool RollbackOn(this RollbackConfigurationType value, Exception exception)
+        public static bool RollBackOn(this RollbackConfigurationType value, Exception exception)
         {
             switch (value)
             {

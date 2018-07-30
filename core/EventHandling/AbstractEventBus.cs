@@ -28,7 +28,7 @@ namespace NAxonFramework.EventHandling
             
         }
 
-        private AbstractEventBus(IMessageMonitor messageMonitor)
+        public AbstractEventBus(IMessageMonitor messageMonitor)
         {
             _messageMonitor = messageMonitor;
             _eventsKey = ToString() + "_EVENTS";

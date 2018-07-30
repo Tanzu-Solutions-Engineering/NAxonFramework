@@ -37,7 +37,7 @@ namespace NAxonFramework.Messaging.UnitOfWork
             }
             catch (Exception e)
             {
-                if (rollbackConfiguration.RollbackOn(e))
+                if (rollbackConfiguration.RollBackOn(e))
                 {
                     Rollback(e);
                 }
