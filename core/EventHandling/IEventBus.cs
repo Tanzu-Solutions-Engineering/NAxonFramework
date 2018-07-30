@@ -10,7 +10,7 @@ namespace NAxonFramework.EventHandling
         IMessageDispatchInterceptorSupport<IEventMessage>
     {
         ITrackingEventStream OpenStream(ITrackingToken trackingToken);
-        void Publish(IEnumerable<IEventMessage> events);
+        void Publish(List<IEventMessage> events);
         IDisposable RegisterDispatchInterceptor(IMessageDispatchInterceptor dispatchInterceptor);
     }
 

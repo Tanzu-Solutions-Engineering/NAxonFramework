@@ -4,7 +4,7 @@ namespace NAxonFramework.EventHandling
 {
     [AttributeUsage(AttributeTargets.Method | AttributeTargets.Class)]
     [EventHandler(payloadType: typeof(ResetTriggerEvent))]
-    public class ResetHandlerAttribute
+    public class ResetHandlerAttribute : Attribute
     {
         
     }
