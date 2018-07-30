@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Reactive.Subjects;
+using System.Transactions;
 using CommonServiceLocator;
 using Core.Tests.Common;
 using FluentAssertions;
@@ -111,7 +112,44 @@ namespace Core.Tests.Messaging.UnitOfWork
         [Fact]
         public void TestAttachedTransactionCommittedOnUnitOfWorkCommit()
         {
+            var enlistment = Substitute.For<IEnlistmentNotification>();
+            enlistment.Prepare(Arg.Do<PreparingEnlistment>(arg => arg.Prepared()));
+            enlistment.Commit(Arg.Do<Enlistment>(e => e.Done()));
             
+            _subject.Start();
+
+            Transaction.Current.Should().NotBeNull();
+            Transaction.Current.EnlistVolatile(enlistment, EnlistmentOptions.None);
+
+            _subject.Commit();
+
+            enlistment.Received().Prepare(Arg.Any<PreparingEnlistment>());
+            enlistment.Received().Commit(Arg.Any<Enlistment>());
+        }
+        [Fact]
+        public void TestAttachedTransactionRolledBackOnUnitOfWorkRollBack()
+        {
+            var enlistment = Substitute.For<IEnlistmentNotification>();
+            enlistment.Prepare(Arg.Do<PreparingEnlistment>(arg => arg.Prepared()));
+            enlistment.Rollback(Arg.Do<Enlistment>(e => e.Done()));
+            _subject.Start();
+
+            Transaction.Current.Should().NotBeNull();
+            Transaction.Current.EnlistVolatile(enlistment, EnlistmentOptions.None);
+
+            _subject.Rollback();
+
+            enlistment.DidNotReceive().Prepare(Arg.Any<PreparingEnlistment>());
+            enlistment.DidNotReceive().Commit(Arg.Any<Enlistment>());
+            enlistment.Received().Rollback(Arg.Any<Enlistment>());
+        }
+
+        [Fact]
+        public void UnitOfWorkIsRolledBackWhenTransactionFailsToStart()
+        {
+            var enlistment = Substitute.For<IEnlistmentNotification>();
+            enlistment.Prepare(Arg.Do<PreparingEnlistment>(arg => arg.Prepared()));
+            enlistment.Rollback(Arg.Do<Enlistment>(e => e.Done()));
         }
 
         private class PhaseTransition {

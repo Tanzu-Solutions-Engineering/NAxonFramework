@@ -28,6 +28,20 @@ namespace NAxonFramework.Common
             }
             
         }
+
+        public static V PutIfAbsent<K, V>(this IDictionary<K, V> dictionary, K key, V value)
+        {
+            if (!dictionary.TryGetValue(key, out var existing))
+            {
+                dictionary[key] = value;
+                return value;
+            }
+            else
+            {
+                return existing;
+            }
+
+        }
 //        public static V GetValueOrDefault<K, V>(this IDictionary<K, V> dictionary, K key, V @default = default(V))
 //        {
 //            return dictionary.TryGetValue(key, out var value) ? value : @default;

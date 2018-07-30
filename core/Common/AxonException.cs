@@ -3,7 +3,7 @@ using System.Runtime.Serialization;
 
 namespace NAxonFramework.Common
 {
-    public class AxonException : Exception
+    public class AxonException : ApplicationException
     {
         protected AxonException(SerializationInfo info, StreamingContext context) : base(info, context)
         {

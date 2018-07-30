@@ -6,6 +6,7 @@ using MoreLinq.Extensions;
 
 namespace NAxonFramework.Common.Attributes
 {
+    //todo: modify to take into account declared attributes that are not passed in as parameter or named attributes. should read defaults by constructing a single instance at runtime and caching its values
     public abstract class AnnotationUtils
     {
         public static bool IsAttributePresent<T>(ICustomAttributeProvider element) where T : Attribute 

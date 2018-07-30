@@ -20,11 +20,4 @@ namespace NAxonFramework.Messaging
         Type PayloadType { get; }
         object Payload { get; }
     }
-
-
-    public static class IMessageExtensions
-    {
-        public static Type GetPayloadType<T>(this IMessage<T> message) => message.GetType();
-    }
-    
 }

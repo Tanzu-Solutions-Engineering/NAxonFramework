@@ -2,6 +2,8 @@
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Reactive.Disposables;
+using System.Threading;
+using System.Threading.Tasks;
 using System.Transactions;
 using Microsoft.Extensions.Logging;
 using NAxonFramework.CommandHandling.Callbacks;
@@ -28,12 +30,12 @@ namespace NAxonFramework.CommandHandling
             _messageMonitor = messageMonitor;
         }
 
-        public void Dispatch<C, R>(ICommandMessage<C> command, ICommandCallback<R> callback)
+        public void Dispatch<R>(ICommandMessage command, ICommandCallback<R> callback)
         {
             DoDisptach(Intercept(command), callback);
         }
 
-        private ICommandMessage<C> Intercept<C>(ICommandMessage<C> command)
+        private ICommandMessage Intercept(ICommandMessage command)
         {
             var commandToDispatch = command;
             foreach (var interceptor in _dispatchInterceptors.Keys)
@@ -44,7 +46,7 @@ namespace NAxonFramework.CommandHandling
             return commandToDispatch;
         }
 
-        private void DoDisptach<C, R>(ICommandMessage<C> command, ICommandCallback<R> callback)
+        private void DoDisptach<R>(ICommandMessage command, ICommandCallback<R> callback)
         {
             var monitorCallback = _messageMonitor.OnMessageIngested(command);
             var handler = FindCommandHandlerFor(command).OrElseThrow(() =>
@@ -59,8 +61,9 @@ namespace NAxonFramework.CommandHandling
             return Optional<IMessageHandler<ICommandMessage>>.OfNullable(_subscriptions.GetValueOrDefault(command.CommandName));
         }
 
-        protected void Handle<R>(ICommandMessage command, IMessageHandler<ICommandMessage> handler, ICommandCallback<R> callback)
+        protected virtual void Handle<R>(ICommandMessage command, IMessageHandler<ICommandMessage> handler, ICommandCallback<R> callback)
         {
+            
             _logger.LogDebug($"Handling command [{command.CommandName}]");
             try
             {
@@ -98,7 +101,7 @@ namespace NAxonFramework.CommandHandling
             return Disposable.Create(() => _dispatchInterceptors.TryRemove(dispatchInterceptor, out _));
         }
 
-        public void Dispatch<C>(ICommandMessage<C> command)
+        public void Dispatch(ICommandMessage command)
         {
             Dispatch(command, LoggingCallback.Instance);
         }

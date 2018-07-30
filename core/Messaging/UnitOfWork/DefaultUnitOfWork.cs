@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Runtime.InteropServices.ComTypes;
+using System.Threading;
 using System.Threading.Tasks;
 using NAxonFramework.Common;
 
@@ -55,7 +56,7 @@ namespace NAxonFramework.Messaging.UnitOfWork
 
         protected override void SetRollbackCause(Exception cause)
         {
-            ExecutionResult = Task.FromException<object>(cause);
+            ExecutionResult = cause != null ? Task.FromException<object>(cause) : Task.FromCanceled<object>(CancellationToken.None);
         }
 
         protected override void NotifyHandlers(Phase phase)

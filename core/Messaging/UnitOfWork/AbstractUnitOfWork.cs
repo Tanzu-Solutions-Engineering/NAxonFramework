@@ -10,7 +10,7 @@ using NAxonFramework.Messaging.Correlation;
 
 namespace NAxonFramework.Messaging.UnitOfWork
 {
-    public abstract class AbstractUnitOfWork : IUnitOfWork
+    public abstract class AbstractUnitOfWork : IUnitOfWork, IDisposable
     {
         private readonly ILogger<AbstractUnitOfWork> _logger = CommonServiceLocator.ServiceLocator.Current.GetInstance<ILogger<AbstractUnitOfWork>>();
         private readonly Dictionary<string, object> _resources = new Dictionary<string, object>();
@@ -18,7 +18,7 @@ namespace NAxonFramework.Messaging.UnitOfWork
         private IUnitOfWork _parentUnitOfWork;
         private Phase _phase = Phase.NOT_STARTED;
         private bool _rolledBack;
-
+        private TransactionScope _transactionScope;
 
         public void Start()
         {
@@ -34,9 +34,18 @@ namespace NAxonFramework.Messaging.UnitOfWork
             });
             ChangePhase(Phase.STARTED);
             CurrentUnitOfWork.Set(this);
-            
+
+            _transactionScope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled);
+            OnCommit(_ =>
+            {
+                _transactionScope.Complete();
+                _transactionScope.Dispose();
+            });
+            OnRollback(_ => _transactionScope.Dispose());
         }
-        
+
+
+
         public void Commit()
         {
             _logger.LogDebug("Committing Unit Of Work");
@@ -71,7 +80,7 @@ namespace NAxonFramework.Messaging.UnitOfWork
                 {
                     SetRollbackCause(e);
                     ChangePhase(Phase.ROLLBACK);
-                    throw e;
+                    throw;
                 }
 
                 if (Phase == Phase.COMMIT)
@@ -117,12 +126,13 @@ namespace NAxonFramework.Messaging.UnitOfWork
 
         public void Rollback(Exception cause = null)
         {
+            
             _logger.LogDebug("Rolling back Unit Of Work.", cause);
             Assert.State(this.IsActive() && Phase.IsBefore(Phase.ROLLBACK), () => $"The UnitOfWork is in an incompatible phase: {Phase}");
             Assert.State(this.IsCurrent() , () => "The UnitOfWork is not the current Unit of Work");
             try
             {
-                this.SetRollbackCause(cause);
+                SetRollbackCause(cause ?? new TransactionAbortedException());
                 ChangePhase(Phase.ROLLBACK);
                 if (this.IsRoot())
                 {
@@ -220,5 +230,11 @@ namespace NAxonFramework.Messaging.UnitOfWork
         public abstract R ExecuteWithResult<R>(Func<R> task, RollbackConfigurationType rollbackConfiguration);
 
         public abstract Task<object> ExecutionResult { get; set; }
+
+        public void Dispose()
+        {
+            if(!_rolledBack)
+                Rollback();
+        }
     }
 }
