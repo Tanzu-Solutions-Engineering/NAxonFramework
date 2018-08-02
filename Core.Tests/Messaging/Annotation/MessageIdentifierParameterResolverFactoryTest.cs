@@ -23,13 +23,16 @@ namespace Core.Tests.Messaging.Annotation
             _integerMethod = this.GetType().GetMethod(nameof(SomeIntegerMethod));
         }
         
-        public void SomeMessageIdentifierMethod([MessageIdentifier] string messageIdentifier) {
+        public void SomeMessageIdentifierMethod([MessageIdentifier] string messageIdentifier) 
+        {
         }
 
-        public void SomeNonAnnotatedMethod(string messageIdentifier) {
+        public void SomeNonAnnotatedMethod(string messageIdentifier) 
+        {
         }
 
-        public void SomeIntegerMethod([MessageIdentifier] int messageIdentifier) {
+        public void SomeIntegerMethod([MessageIdentifier] int messageIdentifier) 
+        {
         }
 
         [Fact]
@@ -43,7 +46,7 @@ namespace Core.Tests.Messaging.Annotation
         [Fact]
         public void TestResolvesToMessageIdentifierWhenAnnotatedForCommandMessage() {
             IParameterResolver resolver = _testSubject.CreateInstance(_messageIdentifierMethod, _messageIdentifierMethod.GetParameters(), 0);
-            var eventMessage = GenericCommandMessage<object>.AsCommandMessage("test");
+            var eventMessage = GenericCommandMessage.AsCommandMessage("test");
             resolver.Matches(eventMessage).Should().BeTrue();
             resolver.ResolveParameterValue(eventMessage).Should().Be(eventMessage.Identifier);
         }

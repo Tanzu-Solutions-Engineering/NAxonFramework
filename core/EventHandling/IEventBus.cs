@@ -13,10 +13,4 @@ namespace NAxonFramework.EventHandling
         void Publish(List<IEventMessage> events);
         IDisposable RegisterDispatchInterceptor(IMessageDispatchInterceptor dispatchInterceptor);
     }
-
-
-    public interface ITrackedEventMessage : IEventMessage
-    {
-        ITrackingToken TrackingToken { get; }
-    }
 }

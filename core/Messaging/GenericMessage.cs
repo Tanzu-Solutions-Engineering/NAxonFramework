@@ -6,42 +6,74 @@ using NAxonFramework.Messaging.UnitOfWork;
 
 namespace NAxonFramework.Messaging
 {
-    public class GenericMessage<T> : AbstractMessage<T>
+
+    public class GenericMessage<T> : GenericMessage, IMessage<T>
+    {
+        public GenericMessage(T payload) : base(payload)
+        {
+        }
+
+        public GenericMessage(T payload, IReadOnlyDictionary<string, object> metadata) : base(payload, metadata)
+        {
+        }
+
+        public GenericMessage(string identifier, T payload, IReadOnlyDictionary<string, object> metaData) : base(identifier, payload, metaData)
+        {
+        }
+
+        public T Payload => (T) base.Payload;
+    }
+    public class GenericMessage : AbstractMessage
     {
         private const long serialVersionUID = 7937214711724527316L;
 
 
-        public GenericMessage(T payload) : this(payload, MetaData.EmptyInstance)
+        public GenericMessage(object payload) : this(payload, MetaData.EmptyInstance)
         {
             
         }
 
-        public GenericMessage(T payload, IReadOnlyDictionary<string, object> metadata) : this(IdentifierFactory.Instance.GenerateIdentifier(), payload, 
+        public GenericMessage(object payload, IReadOnlyDictionary<string, object> metadata) 
+            : this(IdentifierFactory.Instance.GenerateIdentifier(), payload, 
+            CurrentUnitOfWork.CorrelationData.MergedWith(MetaData.From(metadata)))
+        {
+            
+            
+        }
+        public GenericMessage(Type declaredPayloadType, object payload, IReadOnlyDictionary<string, object> metadata) 
+            : this(IdentifierFactory.Instance.GenerateIdentifier(), declaredPayloadType, payload, 
             CurrentUnitOfWork.CorrelationData.MergedWith(MetaData.From(metadata)))
         {
             
             
         }
 
-        public GenericMessage(string identifier, T payload, IReadOnlyDictionary<string, object> metaData) : base(identifier)
+        public GenericMessage(string identifier, object payload, IReadOnlyDictionary<string, object> metaData) : 
+            this(identifier, payload.GetType(), payload, metaData)
+        {
+
+        }
+
+        private GenericMessage(string identifier, Type declaredPayloadType, object payload, IReadOnlyDictionary<string, object> metaData) : base(identifier)
         {
             Payload = payload;
             MetaData = MetaData.From(metaData);
-            PayloadType = typeof(T);
+            PayloadType = declaredPayloadType;
         }
 
-        private GenericMessage(GenericMessage<T> original, MetaData metaData, Type type) : base(original.Identifier)
+        private GenericMessage(GenericMessage original, MetaData metaData) : base(original.Identifier)
         {
             Payload = original.Payload;
+            PayloadType = original.PayloadType;
             MetaData = MetaData.From(metaData);
-            PayloadType = typeof(T);
         }
 
         public override MetaData MetaData { get; }
         public override Type PayloadType { get; }
-        public override T Payload { get; }
+        public override object Payload { get; }
 
-        public override IMessage<T> WithMetaData(IReadOnlyDictionary<string, object> metaData) => new GenericMessage<T>(this, new MetaData(metaData), typeof(T));
+        public override IMessage WithMetaData(IReadOnlyDictionary<string, object> metaData) 
+            => new GenericMessage(this, new MetaData(metaData));
         
     }
 }

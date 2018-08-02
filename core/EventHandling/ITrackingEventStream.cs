@@ -5,4 +5,5 @@ namespace NAxonFramework.EventHandling
     public interface ITrackingEventStream : IMessageStream<ITrackedEventMessage>
     {
     }
+    
 }

@@ -7,10 +7,6 @@ namespace NAxonFramework.Messaging
     public interface IMessage<out T> : IMessage
     {
         new T Payload { get; }
-        IMessage<T> WithMetaData(IReadOnlyDictionary<string, object> metaData);
-        IMessage<T> AndMetaData(IReadOnlyDictionary<string, object> metaData);
-
-
     }
 
     public interface IMessage
@@ -19,5 +15,7 @@ namespace NAxonFramework.Messaging
         MetaData MetaData { get; }
         Type PayloadType { get; }
         object Payload { get; }
+        IMessage WithMetaData(IReadOnlyDictionary<string, object> metaData);
+        IMessage AndMetaData(IReadOnlyDictionary<string, object> metaData);
     }
 }

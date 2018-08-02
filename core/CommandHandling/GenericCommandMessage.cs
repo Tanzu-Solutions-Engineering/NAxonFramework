@@ -5,42 +5,43 @@ using NAxonFramework.Messaging;
 
 namespace NAxonFramework.CommandHandling
 {
-    public class GenericCommandMessage<T> : MessageDecorator<T>, ICommandMessage<T>
+    public class GenericCommandMessage : MessageDecorator, ICommandMessage
     {
         public string CommandName { get; }
 
 
-        public static ICommandMessage<T> AsCommandMessage(object command)
+        public static ICommandMessage AsCommandMessage(object command)
         {
-            if (command is ICommandMessage<T> message)
+            if (command is ICommandMessage message)
             {
                 return message;
             }
-            return new GenericCommandMessage<T>((T)command, MetaData.EmptyInstance);
+            return new GenericCommandMessage(command, MetaData.EmptyInstance);
         }
 
-        public GenericCommandMessage(T payload) : this(payload, MetaData.EmptyInstance)
+        public GenericCommandMessage(object payload) : this(payload, MetaData.EmptyInstance)
         {
         }
 
-        public GenericCommandMessage(T payload, IReadOnlyDictionary<String, object> metadata) : this(new GenericMessage<T>(payload, metadata), payload.GetType().Name)
+        public GenericCommandMessage(object payload, IReadOnlyDictionary<String, object> metadata) 
+            : this(new GenericMessage(payload, metadata), payload.GetType().Name)
         {
             
         }
 
-        public GenericCommandMessage(IMessage<T> @delegate, string commandName) : base(@delegate)
+        public GenericCommandMessage(IMessage @delegate, string commandName) : base(@delegate)
         {
             this.CommandName = commandName;
         }
 
-        public override IMessage<T> WithMetaData(IReadOnlyDictionary<string, object> metaData)
+        public override IMessage WithMetaData(IReadOnlyDictionary<string, object> metaData)
         {
-            return new GenericCommandMessage<T>(base.Delegate.WithMetaData(metaData), CommandName);
+            return new GenericCommandMessage(base.Delegate.WithMetaData(metaData), CommandName);
         }
 
-        public override IMessage<T> AndMetaData(IReadOnlyDictionary<string, object> metaData)
+        public override IMessage AndMetaData(IReadOnlyDictionary<string, object> metaData)
         {
-            return new GenericCommandMessage<T>(base.Delegate.AndMetaData(metaData), CommandName);
+            return new GenericCommandMessage(base.Delegate.AndMetaData(metaData), CommandName);
         }
 
 //        ICommandMessage<T> ICommandMessage<T>.AndMetaData(IReadOnlyDictionary<string, object> metaData) => (ICommandMessage<T>) AndMetaData(metaData);

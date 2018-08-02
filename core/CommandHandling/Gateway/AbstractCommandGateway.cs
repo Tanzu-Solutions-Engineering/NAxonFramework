@@ -31,7 +31,7 @@ namespace NAxonFramework.CommandHandling.Gateway
         
         protected  void Send<C, R>(C command, ICommandCallback<R> callback) 
         {
-            var commandMessage = ProcessInterceptors(GenericCommandMessage<C>.AsCommandMessage(command));
+            var commandMessage = ProcessInterceptors(GenericCommandMessage.AsCommandMessage(command));
             var commandCallback = callback;
             if (_retryScheduler != null) 
             {
@@ -44,11 +44,11 @@ namespace NAxonFramework.CommandHandling.Gateway
         {
             if (_retryScheduler == null) 
             {
-                CommandBus.Dispatch(ProcessInterceptors(GenericCommandMessage<object>.AsCommandMessage(command)));
+                CommandBus.Dispatch(ProcessInterceptors(GenericCommandMessage.AsCommandMessage(command)));
             } 
             else 
             {
-                var commandMessage = GenericCommandMessage<object>.AsCommandMessage(command);
+                var commandMessage = GenericCommandMessage.AsCommandMessage(command);
                 Send(commandMessage, LoggingCallback.Instance);
             }
         }
