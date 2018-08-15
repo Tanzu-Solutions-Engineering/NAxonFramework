@@ -41,7 +41,7 @@ namespace NAxonFramework.Messaging.Attributes
 
 
 
-        public IMessageHandlingMember<T> WrapHandler<T>(IMessageHandlingMember<T> original) => (IMessageHandlingMember<T>) WrapHandler(typeof(T), original);
+//        public IMessageHandlingMember<T> WrapHandler<T>(IMessageHandlingMember<T> original) => (IMessageHandlingMember<T>) WrapHandler(typeof(T), original);
 
         public IMessageHandlingMember WrapHandler(Type type, IMessageHandlingMember original)
         {

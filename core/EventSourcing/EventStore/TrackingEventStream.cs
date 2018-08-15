@@ -2,9 +2,10 @@
 using System.Collections.Async;
 using System.Threading;
 using System.Threading.Tasks;
+using NAxonFramework.EventHandling;
 using NAxonFramework.Messaging;
 
-namespace NAxonFramework.EventHandling
+namespace NAxonFramework.EventSourcing.EventStore
 {
     public class TrackingEventStream : ITrackingEventStream
     {

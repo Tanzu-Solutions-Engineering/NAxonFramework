@@ -5,7 +5,7 @@ using Microsoft.DotNet.PlatformAbstractions;
 
 namespace NAxonFramework.Common
 {
-    public sealed class Optional<T>
+    public sealed class Optional<T> 
     {
         /**
          * Common instance for {@code empty()}.
@@ -38,7 +38,7 @@ namespace NAxonFramework.Common
          * @param value the non-null value to be present
          * @throws NullPointerException if value is null
          */
-        private Optional(T value)
+        internal Optional(T value)
         {
             if (value == null)
                 throw new ArgumentNullException();

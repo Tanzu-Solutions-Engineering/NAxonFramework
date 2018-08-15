@@ -21,7 +21,8 @@ namespace NAxonFramework.Messaging.UnitOfWork
 
         public override R ExecuteWithResult<R>(Func<R> task, RollbackConfigurationType rollbackConfiguration)
         {
-            if (Phase == Phase.NOT_STARTED) {
+            if (Phase == Phase.NOT_STARTED) 
+            {
                 Start();
             }
             Assert.State(Phase == Phase.STARTED, () => $"The UnitOfWork has an incompatible phase: {Phase}");

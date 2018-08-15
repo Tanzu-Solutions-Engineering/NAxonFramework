@@ -18,7 +18,7 @@ namespace NAxonFramework.EventHandling
             _logger = logger;
         }
 
-        public void OnError(Exception exception, IEventMessage @event, EventListener eventListener)
+        public void OnError(Exception exception, IEventMessage @event, IEventListener eventListener)
         {
             var eventListenerType = eventListener is IEventListenerProxy ? ((IEventListenerProxy) eventListener).TargetType : eventListener.GetType();
             _logger.LogError($"EventListener [{eventListenerType.Name}] failed to handle event [{@event.Identifier}] ({@event.PayloadType}). " +

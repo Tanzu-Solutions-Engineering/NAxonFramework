@@ -101,7 +101,7 @@ namespace NAxonFramework.Messaging.Attributes
     * is missing on the method
     */
    //TODO: Rename to match .NET scheme
-   IDictionary<String, Object> AnnotationAttributes(Type attributeType);
+   Optional<IDictionary<String, Object>> AnnotationAttributes(Type attributeType);
    
  }
 }

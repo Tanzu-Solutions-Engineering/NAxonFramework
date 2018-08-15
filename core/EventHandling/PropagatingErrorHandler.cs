@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Diagnostics.Tracing;
 
 namespace NAxonFramework.EventHandling
 {
@@ -15,7 +14,7 @@ namespace NAxonFramework.EventHandling
             throw errorContext.Error;
         }
 
-        public void OnError(Exception exception, IEventMessage @event, EventListener eventListener)
+        public void OnError(Exception exception, IEventMessage @event, IEventListener eventListener)
         {
             throw exception;
         }

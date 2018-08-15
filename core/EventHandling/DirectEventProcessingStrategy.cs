@@ -9,7 +9,7 @@ namespace NAxonFramework.EventHandling
         {
         }
 
-        public DirectEventProcessingStrategy Instance { get; } = new DirectEventProcessingStrategy();
+        public static DirectEventProcessingStrategy Instance { get; } = new DirectEventProcessingStrategy();
         public void Handle(List<IEventMessage> events, Action<List<IEventMessage>> processor)
         {
             processor(events);

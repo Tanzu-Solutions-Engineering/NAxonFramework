@@ -42,9 +42,20 @@ namespace NAxonFramework.Serialization
         {
             return SerializeMetaData<T>(message, _serializer);
         }
+
+        public ISerializedObject Serialize(object obj, Type expectedRepresentation)
+        {
+            return _serializer.Serialize(obj, expectedRepresentation);
+        }
+
         public ISerializedObject<T> Serialize<T>(Object @object) 
         {
             return _serializer.Serialize<T>(@object);
+        }
+
+        public bool CanSerializeTo(Type type)
+        {
+            return _serializer.CanSerializeTo(type);
         }
 
         public bool CanSerializeTo<T>()
@@ -52,7 +63,12 @@ namespace NAxonFramework.Serialization
             return _serializer.CanSerializeTo<T>();
         }
 
-        public T Deserialize<T>(ISerializedObject obj)
+        public object Deserialize(ISerializedObject obj)
+        {
+            return _serializer.Deserialize(obj);
+        }
+
+        public T Deserialize<T>(ISerializedObject<T> obj)
         {
             return _serializer.Deserialize<T>(obj);
         }
