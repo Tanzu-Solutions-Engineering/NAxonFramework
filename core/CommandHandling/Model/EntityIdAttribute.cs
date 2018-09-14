@@ -2,7 +2,7 @@
 
 namespace NAxonFramework.CommandHandling.Model
 {
-    [AttributeUsage(AttributeTargets.Property)]
+    [AttributeUsage(AttributeTargets.Property | AttributeTargets.Class)]
     public class EntityIdAttribute : Attribute
     {
         public EntityIdAttribute(string routingKey = "")
