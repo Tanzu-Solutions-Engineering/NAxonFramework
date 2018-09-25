@@ -8,7 +8,7 @@ using NAxonFramework.Messaging;
 
 namespace NAxonFramework.CommandHandling.Model
 {
-    public class ForwardMatchingInstances<T> : IForwardingMode<T> where T : IMessage
+    public class ForwardMatchingInstances : IForwardingMode
     {
         private string _routingKey;
         private IEntityModel _childEntity;
@@ -21,7 +21,7 @@ namespace NAxonFramework.CommandHandling.Model
                 .OrElse(childEntity.RoutingKey);
         }
 
-        public IEnumerable<E> FilterCandidates<E>(T message, IEnumerable<E> candidates)
+        public IEnumerable<E> FilterCandidates<E>(IMessage message, IEnumerable<E> candidates)
         {
             var routingProperty = message.GetType().GetProperty(_routingKey);
             if (routingProperty == null)

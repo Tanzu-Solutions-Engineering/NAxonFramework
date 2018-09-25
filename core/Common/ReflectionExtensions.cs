@@ -16,5 +16,15 @@ namespace NAxonFramework.Common
         {
             return memberInfo.GetCustomAttributes(attributeType, true).Cast<Attribute>().FirstOrDefault();
         }
+        
+        public static Optional<Type> ResolveGenericType(this PropertyInfo field, int genericTypeIndex) 
+        {
+            var genericType = field.PropertyType;
+            if (genericType.GenericTypeArguments.Length <= genericTypeIndex)
+            {
+                return Optional<Type>.Empty;
+            }
+            return Optional<Type>.Of(genericType.GenericTypeArguments[genericTypeIndex]);
+        }
     }
 }

@@ -6,14 +6,14 @@ using NAxonFramework.Messaging;
 
 namespace NAxonFramework.CommandHandling.Model
 {
-    public class ForwardNone<T> : IForwardingMode<T> where T : IMessage
+    public class ForwardNone : IForwardingMode
     {
         public void Initialize(PropertyInfo property, IEntityModel childEntity)
         {
             
         }
 
-        public IEnumerable<E> FilterCandidates<E>(T message, IEnumerable<E> candidates)
+        public IEnumerable<E> FilterCandidates<E>(IMessage message, IEnumerable<E> candidates)
         {
             return Enumerable.Empty<E>();
         }

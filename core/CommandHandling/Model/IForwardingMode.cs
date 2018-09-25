@@ -5,9 +5,10 @@ using NAxonFramework.Messaging;
 
 namespace NAxonFramework.CommandHandling.Model
 {
-    public interface IForwardingMode<T> where T : IMessage
+    public interface IForwardingMode
     {
         void Initialize(PropertyInfo property, IEntityModel childEntity);
-        IEnumerable<E> FilterCandidates<E>(T message, IEnumerable<E> candidates);
+        IEnumerable<E> FilterCandidates<E>(IMessage message, IEnumerable<E> candidates);
     }
+    
 }
