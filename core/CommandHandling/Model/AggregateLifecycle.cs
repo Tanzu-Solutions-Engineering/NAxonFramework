@@ -22,15 +22,15 @@ namespace NAxonFramework.CommandHandling.Model
 
         public static IAggregate<T> CreateNew<T>(Func<T> factoryMethod)
         {
-            if (!IsLive)
+            if (!Instance.IsLive)
             {
                 throw new NotSupportedException("Aggregate is still initializing its state, creation of new aggregates is not possible");
             }
             return Instance.DoCreateNew(factoryMethod);            
         }
-        public static bool IsLive => Instance.GetIsLive();
-        public static long Version => Instance.GetVersion();
-        public static void MarkDeleted() => Instance.DoMarkDeleted();
+//        public static bool IsLive => Instance.GetIsLive;
+//        public static long? GetVersion => Instance.Version;
+//        public static void MarkDeleted() => Instance.DoMarkDeleted();
 
         protected static AggregateLifecycle Instance
         {
@@ -57,9 +57,9 @@ namespace NAxonFramework.CommandHandling.Model
             }
         }
 
-        protected abstract bool GetIsLive();
-        protected abstract long GetVersion();
-        protected abstract void DoMarkDeleted();
+        public abstract bool IsLive { get; }
+        public abstract long? Version  { get; }
+        public abstract void MarkDeleted();
 
         protected void RegisterWithUnitOfWork()
         {

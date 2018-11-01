@@ -12,6 +12,11 @@ namespace NAxonFramework.CommandHandling.Callbacks
             _tcs.SetResult(result);
         }
 
+        public void OnSuccess(ICommandMessage commandMessage, object result)
+        {
+            OnSuccess(commandMessage, (R)result);
+        }
+
         public void OnFailure(ICommandMessage commandMessage, Exception cause)
         {
             if (cause == null) throw new ArgumentNullException(nameof(cause));

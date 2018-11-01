@@ -26,5 +26,9 @@ namespace NAxonFramework.Common
             }
             return Optional<Type>.Of(genericType.GenericTypeArguments[genericTypeIndex]);
         }
+
+        public static Type[] GetParameterTypes(this MethodInfo methodInfo)
+            => methodInfo.GetParameters().Select(x => x.ParameterType).ToArray();
+
     }
 }

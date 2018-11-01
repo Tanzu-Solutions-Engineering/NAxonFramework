@@ -15,7 +15,10 @@ namespace NAxonFramework.Common
                 yield return value;
         }
 
-        
+        public static V Get<K, V>(this IEnumerable<KeyValuePair<K, V>> source, K key, V @default = default(V))
+        {
+            return GetValueOrDefault(source, key, @default);
+        }
         public static V GetValueOrDefault<K, V>(this IEnumerable<KeyValuePair<K, V>> source, K key, V @default = default(V))
         {
             switch (source)

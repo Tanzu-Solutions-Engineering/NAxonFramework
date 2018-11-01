@@ -57,6 +57,11 @@ namespace NAxonFramework.Common
         {
             return new Optional<T>(value);
         }
+        public static Optional<T> Of(object value)
+        {
+            // todo: dirty hack
+            return (Optional<T>)Activator.CreateInstance(typeof(Optional<T>), value);
+        }
 
         /**
          * Returns an {@code Optional} describing the specified value, if non-null,
@@ -311,5 +316,10 @@ namespace NAxonFramework.Common
         {
             return value != null ? $"Optional[{value}]" : "Optional.empty";
         }
+    }
+    
+    public static class OptionalExtensions
+    {
+        public static Optional<T> AsOptional<T>(this T value) => Optional<T>.Of(value);
     }
 }

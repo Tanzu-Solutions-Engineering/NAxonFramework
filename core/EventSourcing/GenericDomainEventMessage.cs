@@ -97,7 +97,7 @@ namespace NAxonFramework.EventSourcing
 
         public string Type { get; }
         public long SequenceNumber { get; }
-        public string AggregateIdentifier { get; }
+        public virtual string AggregateIdentifier { get; }
 
         protected override string DescribeType => "GenericDomainEventMessage";
     }

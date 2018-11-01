@@ -20,8 +20,8 @@ namespace NAxonFramework.CommandHandling
         public AsynchronousCommandBus(ILogger<SimpleCommandBus> logger, IMessageMonitor messageMonitor) : base(logger, messageMonitor)
         {
         }
-
-        protected override void Handle<R>(ICommandMessage command, IMessageHandler<ICommandMessage> handler, ICommandCallback<R> callback)
+        
+        protected override void Handle(ICommandMessage command, IMessageHandler<ICommandMessage> handler, ICommandCallback callback)
         {
             lock(_lock)
             {

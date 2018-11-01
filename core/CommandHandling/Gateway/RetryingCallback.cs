@@ -7,14 +7,14 @@ using NAxonFramework.Messaging.UnitOfWork;
 
 namespace NAxonFramework.CommandHandling.Gateway
 {
-    public class RetryingCallback<R> : ICommandCallback<R>
+    public class RetryingCallback : ICommandCallback
     {
-        private readonly ICommandCallback<R> _delegate;
+        private readonly ICommandCallback _delegate;
         private readonly IRetryScheduler _retryScheduler;
         private readonly ICommandBus _commandBus;
         private readonly List<Type> _history;
 
-        public RetryingCallback(ICommandCallback<R> @delegate, IRetryScheduler retryScheduler, ICommandBus commandBus) 
+        public RetryingCallback(ICommandCallback @delegate, IRetryScheduler retryScheduler, ICommandBus commandBus) 
         {
             _delegate = @delegate;
             _retryScheduler = retryScheduler;
@@ -22,7 +22,7 @@ namespace NAxonFramework.CommandHandling.Gateway
             _history = new List<Type>();
         }
 
-        public void OnSuccess(ICommandMessage commandMessage, R result)
+        public void OnSuccess(ICommandMessage commandMessage, object result)
         {
             _delegate.OnSuccess(commandMessage, result);
         }

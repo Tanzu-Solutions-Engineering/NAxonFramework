@@ -2,7 +2,7 @@
 {
     public static class IAggregateExtensions
     {
-        public static string IdentifierAsString<T>(this IAggregate<T> aggregate)
+        public static string IdentifierAsString(this IAggregate aggregate)
         {
             return aggregate.Identifier?.ToString();
         }

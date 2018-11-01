@@ -24,14 +24,14 @@ namespace NAxonFramework.CommandHandling.Model.Inspection
             var childEntityModel = ExtractChildEntityModel(declaringEntity, attributes, field);
 
             var eventForwardingMode = InstantiateForwardingMode(
-                field, childEntityModel, attributes["eventForwardingMode"]
+                field, childEntityModel, (Type)attributes["eventForwardingMode"]
                 );
 
             return Optional<IChildEntity>.Of(new AnnotatedChildEntity(
                 childEntityModel,
-                (Boolean) attributes["forwardCommands"],
-                (msg, parent) -> resolveCommandTarget(msg, parent, field, childEntityModel),
-                (msg, parent) -> resolveEventTargets(msg, parent, field, eventForwardingMode)
+                (bool) attributes["forwardCommands"],
+                (msg, parent) => ResolveCommandTarget(msg, parent, field, childEntityModel),
+                (msg, parent) => ResolveEventTargets(msg, parent, field, eventForwardingMode)
             ));
 
         }
@@ -80,8 +80,7 @@ namespace NAxonFramework.CommandHandling.Model.Inspection
 
             if (property == null) {
                 throw new AxonConfigurationException(
-                    $"Command of type {commandHandler.PayloadType} doesn't have a property matching the routing key {routingKey} necessary to route through field {field}",
-                );
+                    $"Command of type {commandHandler.PayloadType} doesn't have a property matching the routing key {routingKey} necessary to route through field {field}");
             }
             return property;
         }

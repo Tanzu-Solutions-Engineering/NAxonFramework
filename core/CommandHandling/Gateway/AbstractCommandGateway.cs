@@ -29,13 +29,13 @@ namespace NAxonFramework.CommandHandling.Gateway
             _retryScheduler = retryScheduler;
         }
         
-        protected  void Send<C, R>(C command, ICommandCallback<R> callback) 
+        protected  void Send(object command, ICommandCallback callback) 
         {
             var commandMessage = ProcessInterceptors(GenericCommandMessage.AsCommandMessage(command));
             var commandCallback = callback;
             if (_retryScheduler != null) 
             {
-                commandCallback = new RetryingCallback<R>(callback, _retryScheduler, CommandBus);
+                commandCallback = new RetryingCallback(callback, _retryScheduler, CommandBus);
             }
             CommandBus.Dispatch(commandMessage, commandCallback);
         }

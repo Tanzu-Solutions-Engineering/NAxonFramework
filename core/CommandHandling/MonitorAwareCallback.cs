@@ -1,20 +1,20 @@
 ﻿using System;
-using NAxonFramework.CommandHandling;
+using NAxonFramework.Monitoring;
 
-namespace NAxonFramework.Monitoring
+namespace NAxonFramework.CommandHandling
 {
-    public class MonitorAwareCallback<R> : ICommandCallback<R>
+    public class MonitorAwareCallback : ICommandCallback
     {
-        private readonly ICommandCallback<R> _delegate;
+        private readonly ICommandCallback _delegate;
         private readonly IMonitorCallback _messageMonitorCallback;
 
-        public MonitorAwareCallback(ICommandCallback<R> @delegate, IMonitorCallback messageMonitorCallback)
+        public MonitorAwareCallback(ICommandCallback @delegate, IMonitorCallback messageMonitorCallback)
         {
             _delegate = @delegate;
             _messageMonitorCallback = messageMonitorCallback;
         }
 
-        public void OnSuccess(ICommandMessage commandMessage, R result)
+        public void OnSuccess(ICommandMessage commandMessage, object result)
         {
             _messageMonitorCallback.ReportSuccess();
             if(_delegate != null)

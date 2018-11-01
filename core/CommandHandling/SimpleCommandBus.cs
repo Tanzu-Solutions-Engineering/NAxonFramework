@@ -30,7 +30,7 @@ namespace NAxonFramework.CommandHandling
             _messageMonitor = messageMonitor;
         }
 
-        public void Dispatch<R>(ICommandMessage command, ICommandCallback<R> callback)
+        public void Dispatch(ICommandMessage command, ICommandCallback callback)
         {
             DoDisptach(Intercept(command), callback);
         }
@@ -46,7 +46,7 @@ namespace NAxonFramework.CommandHandling
             return commandToDispatch;
         }
 
-        private void DoDisptach<R>(ICommandMessage command, ICommandCallback<R> callback)
+        private void DoDisptach(ICommandMessage command, ICommandCallback callback)
         {
             var monitorCallback = _messageMonitor.OnMessageIngested(command);
             var handler = FindCommandHandlerFor(command).OrElseThrow(() =>
@@ -55,13 +55,13 @@ namespace NAxonFramework.CommandHandling
                 monitorCallback.ReportFailure(exception);
                 return exception;
             });
-            Handle(command, handler, new MonitorAwareCallback<R>(callback, monitorCallback));
+            Handle(command, handler, new MonitorAwareCallback(callback, monitorCallback));
         }
         private Optional<IMessageHandler<ICommandMessage>> FindCommandHandlerFor(ICommandMessage command) {
             return Optional<IMessageHandler<ICommandMessage>>.OfNullable(_subscriptions.GetValueOrDefault(command.CommandName));
         }
 
-        protected virtual void Handle<R>(ICommandMessage command, IMessageHandler<ICommandMessage> handler, ICommandCallback<R> callback)
+        protected virtual void Handle(ICommandMessage command, IMessageHandler<ICommandMessage> handler, ICommandCallback callback)
         {
             
             _logger.LogDebug($"Handling command [{command.CommandName}]");
@@ -71,7 +71,7 @@ namespace NAxonFramework.CommandHandling
                 // no need to attach transaction - ambient
                 var chain = new DefaultInterceptorChain(unitOfWork, _handlerInterceptors.Keys.GetEnumerator(), handler);
                 var result = unitOfWork.ExecuteWithResult(chain.Proceed, RollbackConfiguration);
-                callback.OnSuccess(command,(R)result); // todo: double check R cast
+                callback.OnSuccess(command,result); // todo: double check R cast
             }
             catch (Exception e)
             {

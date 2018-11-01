@@ -2,5 +2,7 @@
 {
     public interface ICommandHandlerInterceptorHandlingMember
     {
+        bool ShouldInvokeInterceptorChain();
+        
     }
 }

@@ -7,7 +7,7 @@ namespace NAxonFramework.CommandHandling
     public interface ICommandBus : IMessageHandlerInterceptorSupport<ICommandMessage>, IMessageDispatchInterceptorSupport<ICommandMessage>
     {
         void Dispatch(ICommandMessage command);
-        void Dispatch<R>(ICommandMessage command, ICommandCallback<R> callback);
+        void Dispatch(ICommandMessage command, ICommandCallback callback);
         IDisposable Subscribe(string commandName, IMessageHandler<ICommandMessage> handler);
     }
 }

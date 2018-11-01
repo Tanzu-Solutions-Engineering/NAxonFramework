@@ -6,6 +6,7 @@
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="AsyncEnumerator" Version="2.2.1" />
+    <PackageReference Include="Castle.DynamicProxy" Version="2.2.0" />
     <PackageReference Include="CommonServiceLocator" Version="2.0.3" />
     <PackageReference Include="Dapper" Version="1.50.5" />
     <PackageReference Include="Microsoft.Extensions.DependencyModel" Version="2.1.0" />

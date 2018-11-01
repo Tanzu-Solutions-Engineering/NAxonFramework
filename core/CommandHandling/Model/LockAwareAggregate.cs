@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading;
 using NAxonFramework.Common.Lock;
 
 namespace NAxonFramework.CommandHandling.Model
@@ -16,7 +17,8 @@ namespace NAxonFramework.CommandHandling.Model
         public string Type => WrappedAggregate.Type;
         public object Identifier => WrappedAggregate.Identifier;
         public long? Version => WrappedAggregate.Version;
-        public object Handle<T>(ICommandMessage<T> commandMessage)
+  
+        public object Handle(ICommandMessage commandMessage)
         {
             return WrappedAggregate.Handle(commandMessage);
         }
@@ -26,10 +28,11 @@ namespace NAxonFramework.CommandHandling.Model
             return WrappedAggregate.Invoke(invocation);
         }
 
-        public void Execute<T>(Action<T> invocation)
+        public void Execute(Action<AR> invocation)
         {
             WrappedAggregate.Execute(invocation);
         }
+
 
         public bool IsDeleted => WrappedAggregate.IsDeleted;
         public Type RootType => WrappedAggregate.RootType;
