@@ -5,13 +5,12 @@ namespace NAxonFramework.CommandHandling.Callbacks
 {
     public class LoggingCallback : ICommandCallback<object>
     {
-        private readonly ILogger<LoggingCallback> _logger;
+        private readonly ILogger _logger;
 
-        public LoggingCallback()
+        public LoggingCallback(ILogger logger)
         {
-            _logger = CommonServiceLocator.ServiceLocator.Current.GetInstance<ILogger<LoggingCallback>>();
+            _logger = logger;
         }
-        public static LoggingCallback Instance => new LoggingCallback();
 
         public void OnSuccess(ICommandMessage commandMessage, object result)
         {

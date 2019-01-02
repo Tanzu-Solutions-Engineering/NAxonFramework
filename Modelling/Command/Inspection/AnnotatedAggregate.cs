@@ -20,7 +20,8 @@ namespace NAxonFramework.CommandHandling.Model.Inspection
         private bool _isDeleted = false;
         private long _lastKnownSequence;
 
-        protected AnnotatedAggregate(T aggregateRoot, IAggregateModel model, IEventBus eventBus) : this(aggregateRoot, model, eventBus, null)
+        protected AnnotatedAggregate(T aggregateRoot, IAggregateModel model, IEventBus eventBus) 
+            : this(aggregateRoot, model, eventBus, null)
         {
             
         }
@@ -65,7 +66,6 @@ namespace NAxonFramework.CommandHandling.Model.Inspection
             bool generateSequences)
         {
             var aggregate = new AnnotatedAggregate<T>(aggregateModel, eventBus, repositoryProvider);
-            aggregate.RegisterWithUnitOfWork();
             if (generateSequences) 
             {
                 aggregate.InitSequence();
@@ -85,7 +85,6 @@ namespace NAxonFramework.CommandHandling.Model.Inspection
                 aggregateModel,
                 eventBus,
                 repositoryProvider);
-            aggregate.RegisterWithUnitOfWork();
             return aggregate;
         }
         
@@ -173,6 +172,26 @@ namespace NAxonFramework.CommandHandling.Model.Inspection
             _eventBus?.Publish(msg);
         }
 
+        public object handle(IMessage message)
+        {
+
+            Func<Object> messageHandling;
+
+            if (message is ICommandMessage) {
+                messageHandling = () => Handle((ICommandMessage) message);
+            } 
+            else if (message is IEventMessage) 
+            {
+                messageHandling = () => Handle((IEventMessage) message);
+            } 
+            else 
+            {
+                throw new ArgumentException($"Unsupported message type: {message.GetType()}");
+            }
+
+            return ExecuteWithResult(messageHandling);
+        }
+
         public object Handle(ICommandMessage msg)
         {
             return ExecuteWithResult(() =>
@@ -182,7 +201,13 @@ namespace NAxonFramework.CommandHandling.Model.Inspection
                     .OrderBy(x => x.Priority)
                     .Select(x => new AnnotatedCommandHandlerInterceptor(x, _aggregateRoot))
                     .ToList();
-                var handler = _inspector.CommandHandlers.GetValueOrDefault(msg.CommandName);
+                var handler = _inspector.CommandHandlers.Values
+                    .Where(x => x.CanHandle(msg))
+                    .FirstOrDefault();
+                if (handler == null)
+                {
+                    throw new NoHandlerForCommandException($"No handler available to handle command {msg.CommandName}");
+                }
                 object result;
                 if (interceptors.IsEmpty())
                 {
@@ -190,7 +215,9 @@ namespace NAxonFramework.CommandHandling.Model.Inspection
                 }
                 else
                 {
-                    result = new DefaultInterceptorChain(CurrentUnitOfWork.Get(), interceptors.GetEnumerator(), MessageHandler<ICommandMessage>.Create(m => handler.Handle(msg, _aggregateRoot))).Proceed();
+                    result = new DefaultInterceptorChain(CurrentUnitOfWork.Get(), interceptors.GetEnumerator(), 
+                        MessageHandler<ICommandMessage>.Create(m => handler.Handle(msg, _aggregateRoot)))
+                        .Proceed();
                 }
 
                 if (_aggregateRoot == null)
@@ -202,7 +229,11 @@ namespace NAxonFramework.CommandHandling.Model.Inspection
                 return result;
             });
         }
-
+        private Object Handle(IEventMessage eventMessage) 
+        {
+            _inspector.Publish(eventMessage, _aggregateRoot);
+            return null;
+        }
 
         protected override IApplyMore DoApply<P>(P payload, MetaData metaData)
         {
@@ -242,7 +273,7 @@ namespace NAxonFramework.CommandHandling.Model.Inspection
                     Assert.State(seq == 0, () => "The aggregate identifier has not been set. It must be set at the latest when applying the creation event");
                     return new LazyIdentifierDomainEventMessage<P>(this, Type, seq, payload, metaData);
                 }
-                return new GenericDomainEventMessage(Type, this.IdentifierAsString(), seq, payload, metaData);
+                return new GenericDomainEventMessage(this.Type, this.IdentifierAsString(), seq, payload, metaData);
             }
             return new GenericEventMessage(payload, metaData);
         }

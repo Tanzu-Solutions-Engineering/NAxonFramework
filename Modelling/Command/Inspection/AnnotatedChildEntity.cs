@@ -11,7 +11,7 @@ namespace NAxonFramework.CommandHandling.Model.Inspection
     {
         private readonly IEntityModel _entityModel;
         private readonly Func<IEventMessage, object, IEnumerable<object>> _eventTargetResolver;
-        private readonly Dictionary<string, IMessageHandlingMember> _commandHandlers;
+        private readonly List<IMessageHandlingMember> _commandHandlers;
 
         public AnnotatedChildEntity(IEntityModel entityModel, bool forwardCommands, 
             Func<ICommandMessage, object, object> commandTargetResolver,
@@ -19,12 +19,16 @@ namespace NAxonFramework.CommandHandling.Model.Inspection
         {
             _entityModel = entityModel;
             _eventTargetResolver = eventTargetResolver;
-            _commandHandlers = new Dictionary<string, IMessageHandlingMember>();
+            _commandHandlers = new List<IMessageHandlingMember>();
             if (forwardCommands)
             {
-                _entityModel.CommandHandlers.ForEach(kv => 
-                    _commandHandlers.Add(kv.Key, 
-                        new ChildForwardingCommandMessageHandlingMember(entityModel.CommandHandlerInterceptors, kv.Value, commandTargetResolver)));
+                entityModel.CommandHandlers
+                    .Where(eh => eh.Unwrap<ICommandMessageHandlingMember>().IsPresent)
+                    .ForEach(childHandler => _commandHandlers
+                    .Add(new ChildForwardingCommandMessageHandlingMember(
+                        entityModel.CommandHandlerInterceptors,
+                        childHandler,
+                        commandTargetResolver)));
             }
         }
 
@@ -35,6 +39,6 @@ namespace NAxonFramework.CommandHandling.Model.Inspection
                 .ForEach(target => _entityModel.Publish(msg, target));
         }
 
-        public IReadOnlyDictionary<string, IMessageHandlingMember> CommandHandlers => _commandHandlers;
+        public IList<IMessageHandlingMember> CommandHandlers => _commandHandlers;
     }
 }

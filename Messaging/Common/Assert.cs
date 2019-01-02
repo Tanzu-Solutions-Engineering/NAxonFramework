@@ -29,5 +29,13 @@ namespace NAxonFramework.Common
             IsTrue(value != null, messageSupplier);
             return value;
         }
+
+        public static void AssertThat<T, E>(T value, Predicate<T> assertion, Func<E> exceptionSupplier) where E : Exception
+        {
+            if (!assertion(value))
+            {
+                throw exceptionSupplier();
+            }
+        }
     }
 }

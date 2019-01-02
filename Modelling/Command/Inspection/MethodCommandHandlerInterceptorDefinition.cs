@@ -32,13 +32,13 @@ namespace NAxonFramework.CommandHandling.Model.Inspection
             var method = @delegate.Unwrap<MethodBase>().OrElseThrow(() => new AxonConfigurationException(
                 "The @CommandHandlerInterceptor must be on method."));
             
-            if ((method as MethodInfo)?.ReturnType != null) 
-            {
-                throw new AxonConfigurationException("@CommandHandlerInterceptor must return void.");
-            }
+           
 
             _shouldInvokeInterceptorChain = method.GetParameters().All(p => p.ParameterType != typeof(IInterceptorChain));
-            
+            if (_shouldInvokeInterceptorChain && (method as MethodInfo)?.ReturnType != null) 
+            {
+                throw new AxonConfigurationException("@CommandHandlerInterceptor must return void or declare InterceptorChain parameter.");
+            }
             _commandNamePattern = new Regex((string) annotationAttributes.GetValueOrDefault("commandNamePattern"));
         }
 

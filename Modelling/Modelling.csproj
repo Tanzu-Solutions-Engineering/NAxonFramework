@@ -1,0 +1,21 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>netstandard2.0</TargetFramework>
+        <AssemblyName>NAxonFramework.Modelling</AssemblyName>
+        <RootNamespace>NAxonFramework.Modelling</RootNamespace>
+        <LangVersion>latest</LangVersion>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\Messaging\Messaging.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <PackageReference Include="CommonServiceLocator" Version="2.0.4" />
+      <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="2.1.1" />
+      <PackageReference Include="morelinq" Version="3.0.0" />
+      <PackageReference Include="System.ComponentModel.Annotations" Version="4.5.0" />
+    </ItemGroup>
+
+</Project>

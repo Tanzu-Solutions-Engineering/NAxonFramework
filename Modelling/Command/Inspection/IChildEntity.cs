@@ -9,6 +9,6 @@ namespace NAxonFramework.CommandHandling.Model.Inspection
     public interface IChildEntity
     {
         void Publish(IEventMessage msg, object declaringInstance);
-        IReadOnlyDictionary<string, IMessageHandlingMember> CommandHandlers { get; }
+        IList<IMessageHandlingMember> CommandHandlers { get; }
     }
 }

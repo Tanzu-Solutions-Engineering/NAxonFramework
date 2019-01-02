@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Reflection;
@@ -68,7 +69,7 @@ namespace NAxonFramework.CommandHandling.Model.Inspection
             private AnnotatedHandlerInspector _handlerInspector;
             private readonly AnnotatedAggregateMetaModelFactory _parent;
             private List<IMessageHandlingMember> _commandHandlerInterceptors;
-            private ConcurrentDictionary<String, IMessageHandlingMember> _commandHandlers;
+            private List<IMessageHandlingMember> _commandHandlers;
             private List<IMessageHandlingMember> _eventHandlers;
 
             private String _aggregateType;
@@ -84,7 +85,7 @@ namespace NAxonFramework.CommandHandling.Model.Inspection
             {
                 this._inspectedType = aggregateType;
                 this._commandHandlerInterceptors = new List<IMessageHandlingMember>();
-                this._commandHandlers = new ConcurrentDictionary<string, IMessageHandlingMember>();
+                this._commandHandlers = new List<IMessageHandlingMember>();
                 this._eventHandlers = new List<IMessageHandlingMember>();
                 this._children = new List<IChildEntity>();
                 this._handlerInspector = handlerInspector;
@@ -103,13 +104,13 @@ namespace NAxonFramework.CommandHandling.Model.Inspection
                 foreach (var handler in _handlerInspector.Handlers) 
                 {
                     
-                    var commandHandler = handler.Unwrap<ICommandMessageHandlingMember>();
                     var unwrappedCommandHandlerInterceptor = handler.Unwrap<ICommandHandlerInterceptorHandlingMember>();
-                    if (commandHandler.IsPresent) 
+                    if (handler.Unwrap<ICommandMessageHandlingMember>().IsPresent) 
                     {
-                        _commandHandlers.TryAdd(commandHandler.Get().CommandName, handler);
+                        _commandHandlers.Add(handler);
+                        
                     } 
-                    else if (unwrappedCommandHandlerInterceptor != null) 
+                    else if (handler.Unwrap<ICommandHandlerInterceptorHandlingMember>().IsPresent) 
                     {
                         _commandHandlerInterceptors.Add(handler);
                     } 
@@ -135,7 +136,7 @@ namespace NAxonFramework.CommandHandling.Model.Inspection
                     ChildEntityDefinitions.ForEach(def => def.CreateChildDefinition(field, this).IfPresent(child =>
                     {
                         _children.Add(child);
-                        child.CommandHandlers.ForEach(x => _commandHandlers.TryAdd(x.Key, x.Value));
+                        _commandHandlers.AddRange(child.CommandHandlers);
                     }));
                     AnnotationUtils.FindAnnotationAttributes<EntityIdAttribute>(field).IfPresent(attributes =>
                     {
@@ -172,17 +173,8 @@ namespace NAxonFramework.CommandHandling.Model.Inspection
             private AnnotatedAggregateModel RuntimeModelOf(object target) => (AnnotatedAggregateModel)ModelOf(target.GetType());
 
 
-            public IReadOnlyDictionary<string, IMessageHandlingMember> CommandHandlers => _commandHandlers;
-
-            public IMessageHandlingMember CommandHandler(string commandName)
-            {
-                if (!_commandHandlers.TryGetValue(commandName, out var handler))
-                {
-                    throw new NoHandlerForCommandException($"No handler available to handle command {commandName}");
-                }
-
-                return handler;
-            }
+            public IList<IMessageHandlingMember> CommandHandlers => _commandHandlers.ToImmutableList();
+            
 
             public IEntityModel ModelOf(Type childEntityType)
             {
